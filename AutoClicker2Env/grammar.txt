@@ -1,0 +1,85 @@
+%header%
+GRAMMARTYPE = "LL"
+
+DESCRIPTION = "A grammar for AutoClicker 2"
+
+AUTHOR      = "John Boggess"
+VERSION     = "1.0"
+DATE        = "11/24/2020"
+
+
+%tokens%
+
+STRINGKEYWORD		= "string"
+BOOLKEYWORD			= "bool"
+NUMBERKEYWORD		= "number"
+VOIDKEYWORD			= "void"
+
+IFKEYWORD			= "if"
+WHILEKEYWORD		= "while"
+
+RETURNKEYWORD		= "return"
+
+OR					= "|"
+AND					= "&"
+NOT					= "!"
+LESS				= "<"
+LESSEQUAL			= "<="
+GREATER				= ">"
+GREATEREQUAL		= ">="
+NOTEQUAL			= "!="
+EQUAL				= "=="
+
+ASSIGNMENT			= "="
+PARENTHESESLEFT		= "("
+PARENTHESESRIGHT	= ")"
+CURLYPARENTHESESLEFT= "{"
+CURLYPARENTHESESRIGHT="}"
+BRACKETLEFT			= "["
+BRACKETRIGHT		= "]"
+ENDLINE				= ";"
+DELIMITER			= ","
+
+MATHMODESYM			= "$"
+ADD					= "+"
+SUBTRACT			= "-"
+MULTIPLY			= "*"
+DIVISION			= "/"
+
+NUMBERLITERAL		= <<[-]?[0-9]*[.]?[0-9]*>>
+TRUELITERAL			= "true"
+FALSELITERAL		= "false"
+STRINGLITERAL		= <<".*">>
+
+IDENTIFIER			= <<[a-zA-Z][a-zA-Z0-9]*>>
+
+WHITESPACE			= <<[ \t\n\r]+>> %ignore%
+
+
+%productions%
+
+
+Expression			= VarDelcaration | If | While | FunctionDef | FunctionReturn;
+Evaluatable			= EvaluatableNoMath | MathMode; //Something that can be evaluated to a specific value
+EvaluatableNoMath	= Var | Literal | FunctionCall;
+
+Var					= IDENTIFIER [ "[" Evaluatable "]" ];
+VarDelcaration		= Type Var "=" Evaluatable ";";
+
+Type				= STRINGKEYWORD | BOOLKEYWORD | NUMBERKEYWORD | VOIDKEYWORD;
+Literal				= TRUELITERAL | NUMBERLITERAL | FALSELITERAL | STRINGLITERAL;
+
+If					= "if" "(" Evaluatable ")" "{" { Expression } "}";
+While				= "while" "(" Evaluatable ")" "{" { Expression } "}";
+
+FunctionDef			= Type IDENTIFIER "(" Type IDENTIFIER { "," Type IDENTIFIER } ")" "{" { Expression } "}";
+FunctionReturn		= "return" Evaluatable ";";
+FunctionCall		= IDENTIFIER "(" [ Evaluatable { "," Evaluatable } ] ")";
+
+MathMode			= "$" (MathExpression) "$";
+
+
+MathExpression		= MathTerm { ("+" | "-" | "|" | "&" | "<" | "<=" | ">" | ">=" | "!=" | "==") MathTerm };
+MathTerm			= ["!"] MathFactor { ("*"|"/") ["!"] MathFactor };
+MathFactor			= EvaluatableNoMath | MathGroup;
+MathGroup			= "(" MathExpression ")";
