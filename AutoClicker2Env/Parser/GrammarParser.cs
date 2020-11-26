@@ -25,7 +25,10 @@ internal class GrammarParser : RecursiveDescentParser {
         SUBPRODUCTION_5 = 3005,
         SUBPRODUCTION_6 = 3006,
         SUBPRODUCTION_7 = 3007,
-        SUBPRODUCTION_8 = 3008
+        SUBPRODUCTION_8 = 3008,
+        SUBPRODUCTION_9 = 3009,
+        SUBPRODUCTION_10 = 3010,
+        SUBPRODUCTION_11 = 3011
     }
 
     /**
@@ -84,11 +87,15 @@ internal class GrammarParser : RecursiveDescentParser {
         ProductionPattern             pattern;
         ProductionPatternAlternative  alt;
 
-        pattern = new ProductionPattern((int) GrammarConstants.EXPRESSION,
-                                        "Expression");
+        pattern = new ProductionPattern((int) GrammarConstants.PROGRAM,
+                                        "Program");
         alt = new ProductionPatternAlternative();
-        alt.AddProduction((int) GrammarConstants.VAR_DELCARATION, 1, 1);
+        alt.AddProduction((int) GrammarConstants.FUNCTION_DEF, 1, -1);
         pattern.AddAlternative(alt);
+        AddPattern(pattern);
+
+        pattern = new ProductionPattern((int) GrammarConstants.STATEMENT,
+                                        "Statement");
         alt = new ProductionPatternAlternative();
         alt.AddProduction((int) GrammarConstants.IF, 1, 1);
         pattern.AddAlternative(alt);
@@ -96,25 +103,22 @@ internal class GrammarParser : RecursiveDescentParser {
         alt.AddProduction((int) GrammarConstants.WHILE, 1, 1);
         pattern.AddAlternative(alt);
         alt = new ProductionPatternAlternative();
-        alt.AddProduction((int) GrammarConstants.FUNCTION_DEF, 1, 1);
-        pattern.AddAlternative(alt);
-        alt = new ProductionPatternAlternative();
-        alt.AddProduction((int) GrammarConstants.FUNCTION_RETURN, 1, 1);
+        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_2, 1, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
-        pattern = new ProductionPattern((int) GrammarConstants.EVALUATABLE,
-                                        "Evaluatable");
+        pattern = new ProductionPattern((int) GrammarConstants.EXPRESSION,
+                                        "Expression");
         alt = new ProductionPatternAlternative();
-        alt.AddProduction((int) GrammarConstants.EVALUATABLE_NO_MATH, 1, 1);
+        alt.AddProduction((int) GrammarConstants.EXPRESSION_NO_MATH, 1, 1);
         pattern.AddAlternative(alt);
         alt = new ProductionPatternAlternative();
         alt.AddProduction((int) GrammarConstants.MATH_MODE, 1, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
-        pattern = new ProductionPattern((int) GrammarConstants.EVALUATABLE_NO_MATH,
-                                        "EvaluatableNoMath");
+        pattern = new ProductionPattern((int) GrammarConstants.EXPRESSION_NO_MATH,
+                                        "ExpressionNoMath");
         alt = new ProductionPatternAlternative();
         alt.AddProduction((int) GrammarConstants.VAR, 1, 1);
         pattern.AddAlternative(alt);
@@ -130,7 +134,7 @@ internal class GrammarParser : RecursiveDescentParser {
                                         "Var");
         alt = new ProductionPatternAlternative();
         alt.AddToken((int) GrammarConstants.IDENTIFIER, 1, 1);
-        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_1, 0, 1);
+        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_3, 0, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
@@ -140,8 +144,7 @@ internal class GrammarParser : RecursiveDescentParser {
         alt.AddProduction((int) GrammarConstants.TYPE, 1, 1);
         alt.AddProduction((int) GrammarConstants.VAR, 1, 1);
         alt.AddToken((int) GrammarConstants.ASSIGNMENT, 1, 1);
-        alt.AddProduction((int) GrammarConstants.EVALUATABLE, 1, 1);
-        alt.AddToken((int) GrammarConstants.ENDLINE, 1, 1);
+        alt.AddProduction((int) GrammarConstants.EXPRESSION, 1, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
@@ -182,10 +185,10 @@ internal class GrammarParser : RecursiveDescentParser {
         alt = new ProductionPatternAlternative();
         alt.AddToken((int) GrammarConstants.IFKEYWORD, 1, 1);
         alt.AddToken((int) GrammarConstants.PARENTHESESLEFT, 1, 1);
-        alt.AddProduction((int) GrammarConstants.EVALUATABLE, 1, 1);
+        alt.AddProduction((int) GrammarConstants.EXPRESSION, 1, 1);
         alt.AddToken((int) GrammarConstants.PARENTHESESRIGHT, 1, 1);
         alt.AddToken((int) GrammarConstants.CURLYPARENTHESESLEFT, 1, 1);
-        alt.AddProduction((int) GrammarConstants.EXPRESSION, 0, -1);
+        alt.AddProduction((int) GrammarConstants.STATEMENT, 0, -1);
         alt.AddToken((int) GrammarConstants.CURLYPARENTHESESRIGHT, 1, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
@@ -195,10 +198,10 @@ internal class GrammarParser : RecursiveDescentParser {
         alt = new ProductionPatternAlternative();
         alt.AddToken((int) GrammarConstants.WHILEKEYWORD, 1, 1);
         alt.AddToken((int) GrammarConstants.PARENTHESESLEFT, 1, 1);
-        alt.AddProduction((int) GrammarConstants.EVALUATABLE, 1, 1);
+        alt.AddProduction((int) GrammarConstants.EXPRESSION, 1, 1);
         alt.AddToken((int) GrammarConstants.PARENTHESESRIGHT, 1, 1);
         alt.AddToken((int) GrammarConstants.CURLYPARENTHESESLEFT, 1, 1);
-        alt.AddProduction((int) GrammarConstants.EXPRESSION, 0, -1);
+        alt.AddProduction((int) GrammarConstants.STATEMENT, 0, -1);
         alt.AddToken((int) GrammarConstants.CURLYPARENTHESESRIGHT, 1, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
@@ -209,12 +212,10 @@ internal class GrammarParser : RecursiveDescentParser {
         alt.AddProduction((int) GrammarConstants.TYPE, 1, 1);
         alt.AddToken((int) GrammarConstants.IDENTIFIER, 1, 1);
         alt.AddToken((int) GrammarConstants.PARENTHESESLEFT, 1, 1);
-        alt.AddProduction((int) GrammarConstants.TYPE, 1, 1);
-        alt.AddToken((int) GrammarConstants.IDENTIFIER, 1, 1);
-        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_2, 0, -1);
+        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_5, 0, 1);
         alt.AddToken((int) GrammarConstants.PARENTHESESRIGHT, 1, 1);
         alt.AddToken((int) GrammarConstants.CURLYPARENTHESESLEFT, 1, 1);
-        alt.AddProduction((int) GrammarConstants.EXPRESSION, 0, -1);
+        alt.AddProduction((int) GrammarConstants.STATEMENT, 0, -1);
         alt.AddToken((int) GrammarConstants.CURLYPARENTHESESRIGHT, 1, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
@@ -223,8 +224,7 @@ internal class GrammarParser : RecursiveDescentParser {
                                         "FunctionReturn");
         alt = new ProductionPatternAlternative();
         alt.AddToken((int) GrammarConstants.RETURNKEYWORD, 1, 1);
-        alt.AddProduction((int) GrammarConstants.EVALUATABLE, 1, 1);
-        alt.AddToken((int) GrammarConstants.ENDLINE, 1, 1);
+        alt.AddProduction((int) GrammarConstants.EXPRESSION, 1, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
@@ -233,7 +233,7 @@ internal class GrammarParser : RecursiveDescentParser {
         alt = new ProductionPatternAlternative();
         alt.AddToken((int) GrammarConstants.IDENTIFIER, 1, 1);
         alt.AddToken((int) GrammarConstants.PARENTHESESLEFT, 1, 1);
-        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_4, 0, 1);
+        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_7, 0, 1);
         alt.AddToken((int) GrammarConstants.PARENTHESESRIGHT, 1, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
@@ -251,7 +251,7 @@ internal class GrammarParser : RecursiveDescentParser {
                                         "MathExpression");
         alt = new ProductionPatternAlternative();
         alt.AddProduction((int) GrammarConstants.MATH_TERM, 1, 1);
-        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_6, 0, -1);
+        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_9, 0, -1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
@@ -260,14 +260,14 @@ internal class GrammarParser : RecursiveDescentParser {
         alt = new ProductionPatternAlternative();
         alt.AddToken((int) GrammarConstants.NOT, 0, 1);
         alt.AddProduction((int) GrammarConstants.MATH_FACTOR, 1, 1);
-        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_8, 0, -1);
+        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_11, 0, -1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
         pattern = new ProductionPattern((int) GrammarConstants.MATH_FACTOR,
                                         "MathFactor");
         alt = new ProductionPatternAlternative();
-        alt.AddProduction((int) GrammarConstants.EVALUATABLE_NO_MATH, 1, 1);
+        alt.AddProduction((int) GrammarConstants.EXPRESSION_NO_MATH, 1, 1);
         pattern.AddAlternative(alt);
         alt = new ProductionPatternAlternative();
         alt.AddProduction((int) GrammarConstants.MATH_GROUP, 1, 1);
@@ -287,14 +287,37 @@ internal class GrammarParser : RecursiveDescentParser {
                                         "Subproduction1");
         pattern.Synthetic = true;
         alt = new ProductionPatternAlternative();
-        alt.AddToken((int) GrammarConstants.BRACKETLEFT, 1, 1);
-        alt.AddProduction((int) GrammarConstants.EVALUATABLE, 1, 1);
-        alt.AddToken((int) GrammarConstants.BRACKETRIGHT, 1, 1);
+        alt.AddProduction((int) GrammarConstants.VAR_DELCARATION, 1, 1);
+        pattern.AddAlternative(alt);
+        alt = new ProductionPatternAlternative();
+        alt.AddProduction((int) GrammarConstants.FUNCTION_RETURN, 1, 1);
+        pattern.AddAlternative(alt);
+        alt = new ProductionPatternAlternative();
+        alt.AddProduction((int) GrammarConstants.EXPRESSION, 1, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
         pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_2,
                                         "Subproduction2");
+        pattern.Synthetic = true;
+        alt = new ProductionPatternAlternative();
+        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_1, 1, 1);
+        alt.AddToken((int) GrammarConstants.ENDLINE, 1, 1);
+        pattern.AddAlternative(alt);
+        AddPattern(pattern);
+
+        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_3,
+                                        "Subproduction3");
+        pattern.Synthetic = true;
+        alt = new ProductionPatternAlternative();
+        alt.AddToken((int) GrammarConstants.BRACKETLEFT, 1, 1);
+        alt.AddProduction((int) GrammarConstants.EXPRESSION, 1, 1);
+        alt.AddToken((int) GrammarConstants.BRACKETRIGHT, 1, 1);
+        pattern.AddAlternative(alt);
+        AddPattern(pattern);
+
+        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_4,
+                                        "Subproduction4");
         pattern.Synthetic = true;
         alt = new ProductionPatternAlternative();
         alt.AddToken((int) GrammarConstants.DELIMITER, 1, 1);
@@ -303,26 +326,36 @@ internal class GrammarParser : RecursiveDescentParser {
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
-        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_3,
-                                        "Subproduction3");
+        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_5,
+                                        "Subproduction5");
+        pattern.Synthetic = true;
+        alt = new ProductionPatternAlternative();
+        alt.AddProduction((int) GrammarConstants.TYPE, 1, 1);
+        alt.AddToken((int) GrammarConstants.IDENTIFIER, 1, 1);
+        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_4, 0, -1);
+        pattern.AddAlternative(alt);
+        AddPattern(pattern);
+
+        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_6,
+                                        "Subproduction6");
         pattern.Synthetic = true;
         alt = new ProductionPatternAlternative();
         alt.AddToken((int) GrammarConstants.DELIMITER, 1, 1);
-        alt.AddProduction((int) GrammarConstants.EVALUATABLE, 1, 1);
+        alt.AddProduction((int) GrammarConstants.EXPRESSION, 1, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
-        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_4,
-                                        "Subproduction4");
+        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_7,
+                                        "Subproduction7");
         pattern.Synthetic = true;
         alt = new ProductionPatternAlternative();
-        alt.AddProduction((int) GrammarConstants.EVALUATABLE, 1, 1);
-        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_3, 0, -1);
+        alt.AddProduction((int) GrammarConstants.EXPRESSION, 1, 1);
+        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_6, 0, -1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
-        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_5,
-                                        "Subproduction5");
+        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_8,
+                                        "Subproduction8");
         pattern.Synthetic = true;
         alt = new ProductionPatternAlternative();
         alt.AddToken((int) GrammarConstants.ADD, 1, 1);
@@ -356,17 +389,17 @@ internal class GrammarParser : RecursiveDescentParser {
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
-        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_6,
-                                        "Subproduction6");
+        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_9,
+                                        "Subproduction9");
         pattern.Synthetic = true;
         alt = new ProductionPatternAlternative();
-        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_5, 1, 1);
+        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_8, 1, 1);
         alt.AddProduction((int) GrammarConstants.MATH_TERM, 1, 1);
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
-        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_7,
-                                        "Subproduction7");
+        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_10,
+                                        "Subproduction10");
         pattern.Synthetic = true;
         alt = new ProductionPatternAlternative();
         alt.AddToken((int) GrammarConstants.MULTIPLY, 1, 1);
@@ -376,11 +409,11 @@ internal class GrammarParser : RecursiveDescentParser {
         pattern.AddAlternative(alt);
         AddPattern(pattern);
 
-        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_8,
-                                        "Subproduction8");
+        pattern = new ProductionPattern((int) SynteticPatterns.SUBPRODUCTION_11,
+                                        "Subproduction11");
         pattern.Synthetic = true;
         alt = new ProductionPatternAlternative();
-        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_7, 1, 1);
+        alt.AddProduction((int) SynteticPatterns.SUBPRODUCTION_10, 1, 1);
         alt.AddToken((int) GrammarConstants.NOT, 0, 1);
         alt.AddProduction((int) GrammarConstants.MATH_FACTOR, 1, 1);
         pattern.AddAlternative(alt);

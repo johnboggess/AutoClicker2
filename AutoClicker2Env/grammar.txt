@@ -58,28 +58,27 @@ WHITESPACE			= <<[ \t\n\r]+>> %ignore%
 
 %productions%
 
+Program				= ( FunctionDef )+;
+Statement			= If | While | ( (VarDelcaration | FunctionReturn | Expression) ";" ) ;
+Expression			= ExpressionNoMath | MathMode;
+ExpressionNoMath	= Var | Literal | FunctionCall;
 
-Expression			= VarDelcaration | If | While | FunctionDef | FunctionReturn;
-Evaluatable			= EvaluatableNoMath | MathMode; //Something that can be evaluated to a specific value
-EvaluatableNoMath	= Var | Literal | FunctionCall;
-
-Var					= IDENTIFIER [ "[" Evaluatable "]" ];
-VarDelcaration		= Type Var "=" Evaluatable ";";
+Var					= IDENTIFIER [ "[" Expression "]" ];
+VarDelcaration		= Type Var "=" Expression ;
 
 Type				= STRINGKEYWORD | BOOLKEYWORD | NUMBERKEYWORD | VOIDKEYWORD;
 Literal				= TRUELITERAL | NUMBERLITERAL | FALSELITERAL | STRINGLITERAL;
 
-If					= "if" "(" Evaluatable ")" "{" { Expression } "}";
-While				= "while" "(" Evaluatable ")" "{" { Expression } "}";
+If					= "if" "(" Expression ")" "{" { Statement } "}";
+While				= "while" "(" Expression ")" "{" { Statement } "}";
 
-FunctionDef			= Type IDENTIFIER "(" Type IDENTIFIER { "," Type IDENTIFIER } ")" "{" { Expression } "}";
-FunctionReturn		= "return" Evaluatable ";";
-FunctionCall		= IDENTIFIER "(" [ Evaluatable { "," Evaluatable } ] ")";
+FunctionDef			= Type IDENTIFIER "(" [ Type IDENTIFIER { "," Type IDENTIFIER } ] ")" "{" { Statement } "}";
+FunctionReturn		= "return" Expression ;
+FunctionCall		= IDENTIFIER "(" [ Expression { "," Expression } ] ")";
 
 MathMode			= "$" (MathExpression) "$";
 
-
 MathExpression		= MathTerm { ("+" | "-" | "|" | "&" | "<" | "<=" | ">" | ">=" | "!=" | "==") MathTerm };
 MathTerm			= ["!"] MathFactor { ("*"|"/") ["!"] MathFactor };
-MathFactor			= EvaluatableNoMath | MathGroup;
+MathFactor			= ExpressionNoMath | MathGroup;
 MathGroup			= "(" MathExpression ")";
